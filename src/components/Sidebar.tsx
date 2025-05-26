@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, LayoutDashboard, User, MessageSquare, LogOut } from 'lucide-react';
@@ -15,7 +16,7 @@ const Sidebar: React.FC = () => {
   return (
     <aside className="w-64 bg-sidebar p-4 flex flex-col border-r border-sidebar-border shadow-soft">
       <div className="mb-8 flex items-center justify-center py-4">
-        <img src="/lovable-uploads/a0e13c38-4468-406e-ba01-69f71a928192.png" alt="MuhsinAI Logo" className="h-9 w-9" />
+        <img src="/lovable-uploads/a0e13c38-4468-406e-ba01-69f71a928192.png" alt="MuhsinAI Logo" className="h-12 w-12" /> {/* Increased size from h-9 w-9 */}
         <span className="ml-2 text-2xl font-semibold text-foreground">MuhsinAI</span>
       </div>
       <nav className="flex-grow">
