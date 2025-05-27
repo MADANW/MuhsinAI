@@ -38,8 +38,7 @@ class UserResponse(BaseModel):
     email: str = Field(..., description="User email address")
     created_at: datetime = Field(..., description="Account creation timestamp")
     
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 
 class AuthResponse(BaseModel):
@@ -52,15 +51,4 @@ class AuthResponse(BaseModel):
 class ErrorResponse(BaseModel):
     """Error response schema."""
     detail: str = Field(..., description="Error message")
-    error_code: Optional[str] = Field(None, description="Error code")
-
-
-class PasswordValidation(BaseModel):
-    """Password validation schema."""
-    password: str = Field(
-        ...,
-        min_length=8,
-        max_length=100,
-        regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$",
-        description="Password must contain at least one lowercase letter, one uppercase letter, and one digit"
-    ) 
+    error_code: Optional[str] = Field(None, description="Error code") 

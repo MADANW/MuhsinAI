@@ -8,6 +8,7 @@ from app.utils.config import settings
 from app.db.database import get_db, create_tables, check_database_connection
 from app.db.crud import UserCRUD, ChatCRUD
 from app.db import models
+from app.api import auth
 
 
 def create_app() -> FastAPI:
@@ -29,6 +30,9 @@ def create_app() -> FastAPI:
         allow_methods=["GET", "POST", "PUT", "DELETE"],
         allow_headers=["*"],
     )
+    
+    # Include routers
+    app.include_router(auth.router, prefix="/api/v1")
     
     return app
 
@@ -55,7 +59,8 @@ async def root():
         "version": settings.app_version,
         "status": "running",
         "docs": "/docs",
-        "database": "connected" if await check_database_connection() else "disconnected"
+        "database": "connected" if await check_database_connection() else "disconnected",
+        "authentication": "available"
     }
 
 
@@ -69,7 +74,8 @@ async def health_check():
         "app_name": settings.app_name,
         "version": settings.app_version,
         "environment": "development" if settings.debug else "production",
-        "database_connected": db_status
+        "database_connected": db_status,
+        "authentication_enabled": True
     }
 
 
@@ -84,14 +90,24 @@ async def api_status():
         "openai": "not_configured" if not settings.openai_api_key else "configured",
         "features": {
             "database": "✅ operational" if db_connected else "❌ disconnected",
-            "authentication": "⏳ pending (Sprint 3)",
+            "authentication": "✅ operational (Sprint 3)",
             "chat": "⏳ pending (Sprint 5)",
             "user_management": "⏳ pending (Sprint 6)"
         },
         "sprint_progress": {
             "sprint_1": "✅ complete (Foundation)",
-            "sprint_2": "🚧 in_progress (Database)",
-            "current_phase": "Database integration"
+            "sprint_2": "✅ complete (Database)",
+            "sprint_3": "✅ complete (Authentication)",
+            "current_phase": "Ready for Sprint 4 (OpenAI Integration)"
+        },
+        "available_endpoints": {
+            "auth": {
+                "register": "POST /api/v1/auth/register",
+                "login": "POST /api/v1/auth/login",
+                "profile": "GET /api/v1/auth/me",
+                "refresh": "POST /api/v1/auth/refresh",
+                "logout": "POST /api/v1/auth/logout"
+            }
         }
     }
 

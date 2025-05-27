@@ -1,211 +1,303 @@
-# MuhsinAI - AI-Powered Schedule Builder
+# 🤖 MuhsinAI - AI-Powered Schedule Builder
 
-<div align="center">
-  <img src="/public/lovable-uploads/a0e13c38-4468-406e-ba01-69f71a928192.png" alt="MuhsinAI Logo" width="120" height="120">
-  
-  **A modern, full-stack AI scheduling assistant with React frontend and FastAPI backend**
-  
-  [![React](https://img.shields.io/badge/React-18.3.1-blue.svg)](https://reactjs.org/)
-  [![TypeScript](https://img.shields.io/badge/TypeScript-5.5.3-blue.svg)](https://www.typescriptlang.org/)
-  [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4.11-blue.svg)](https://tailwindcss.com/)
-  [![FastAPI](https://img.shields.io/badge/FastAPI-Pending-orange.svg)](https://fastapi.tiangolo.com/)
-</div>
+> **Full-stack AI scheduling assistant with React frontend and FastAPI backend**
 
-## 🎯 Project Overview
+[![Status](https://img.shields.io/badge/Status-65%25%20Complete-brightgreen)](https://github.com/yourusername/muhsinai)
+[![Frontend](https://img.shields.io/badge/Frontend-85%25%20Complete-success)](https://github.com/yourusername/muhsinai)
+[![Backend](https://img.shields.io/badge/Backend-50%25%20Complete-orange)](https://github.com/yourusername/muhsinai)
+[![Authentication](https://img.shields.io/badge/Authentication-✅%20Complete-success)](https://github.com/yourusername/muhsinai)
 
-MuhsinAI is a sophisticated AI-powered scheduling assistant that transforms natural language prompts into structured, personalized daily or weekly schedules. The application features a modern dark-themed UI with real-time chat interface and integrated calendar functionality.
+## 🎯 **Project Overview**
 
-### ✨ Key Features
+MuhsinAI is a modern, full-stack AI scheduling assistant that transforms natural language prompts into personalized daily or weekly schedules. Built with React 18 + TypeScript frontend and FastAPI backend, featuring a sleek dark theme and real-time authentication system.
 
-- **🤖 AI Chat Interface**: Natural language processing for schedule generation
-- **📅 Interactive Calendar**: Weekly view with time slot management
-- **🔐 User Authentication**: Secure login/signup with JWT tokens
-- **💬 Chat History**: Persistent conversation storage
-- **🎨 Modern UI**: Dark theme with emerald green accents
-- **📱 Responsive Design**: Mobile-first approach with smooth animations
-- **⚡ Real-time Updates**: Instant chat responses and calendar updates
+### ✨ **Current Features (Live & Working)**
 
-## 🛠️ Tech Stack
+- 🔐 **Complete Authentication System** - JWT-based auth with bcrypt password hashing
+- 🎨 **Modern Dark UI** - Professional matte black + emerald green theme
+- 📱 **Responsive Design** - Mobile-first approach with Tailwind CSS
+- 🛡️ **Protected Routes** - Automatic login/logout redirects
+- 👤 **Real User Profiles** - Live user data from backend
+- 🔄 **Token Management** - Automatic refresh and session handling
+- 📊 **Live API Documentation** - Interactive docs at `/docs`
+- 🗄️ **SQLite Database** - Optimized schema with proper indexes
 
-### Frontend (✅ Completed)
-- **React 18** + **TypeScript** + **Vite** - Modern development setup
-- **Tailwind CSS** - Utility-first styling with custom dark theme
-- **shadcn/ui** - 50+ high-quality UI components
-- **React Router DOM** - Client-side routing
-- **React Query** - Server state management
-- **Lucide React** - Beautiful icons
-
-### Backend (🚧 In Development - Sprint 1 ✅ Complete)
-- **FastAPI** - High-performance Python API framework ✅
-- **SQLite** + **SQLAlchemy** - Lightweight database with async ORM ⏳
-- **OpenAI API** - GPT-3.5-turbo for schedule generation ⏳
-- **JWT Authentication** - Secure user sessions ⏳
-- **Pydantic** - Data validation and serialization ✅
-
-## 🚀 Quick Start
+## 🚀 **Quick Start**
 
 ### Prerequisites
-- Node.js 18+ and npm/yarn
-- Python 3.8+ (for backend development)
-- OpenAI API key (for AI functionality)
+- Node.js 18+ and npm
+- Python 3.8+ and pip
+- Git
 
-### Frontend Setup
-
+### 1. Clone & Setup
 ```bash
-# Clone the repository
-git clone <your-repo-url>
-cd MuhsinAI
+git clone https://github.com/yourusername/muhsinai.git
+cd muhsinai
 
-# Install dependencies
+# Backend setup
+python3 -m venv myenv
+source myenv/bin/activate  # Linux/Mac
+# myenv\Scripts\activate   # Windows
+
+pip install -r requirements.txt
+pip install email-validator  # Required for Pydantic EmailStr
+
+# Frontend setup
 npm install
+```
 
-# Start development server
+### 2. Environment Configuration
+Create `.env` file in root directory:
+```env
+# Backend Configuration
+SECRET_KEY=your-super-secret-key-here
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+DATABASE_URL=sqlite:///./muhsinai.db
+
+# OpenAI Configuration (for Sprint 4)
+OPENAI_API_KEY=your-openai-api-key-here
+
+# App Configuration
+APP_NAME=MuhsinAI
+APP_VERSION=1.0.0
+DEBUG=true
+```
+
+### 3. Run the Application
+```bash
+# Terminal 1: Start Backend (Port 8000)
+source myenv/bin/activate
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+# Terminal 2: Start Frontend (Port 8080)
 npm run dev
 ```
 
-The frontend will be available at `http://localhost:5173`
+### 4. Test the System
+1. **Backend API**: http://localhost:8000
+2. **Frontend App**: http://localhost:8080
+3. **API Docs**: http://localhost:8000/docs
+4. **Health Check**: http://localhost:8000/health
 
-### Backend Setup (✅ Sprint 1 Complete)
+## 🏗️ **Architecture**
 
+### **Frontend Stack**
+- **React 18** + TypeScript + Vite
+- **Tailwind CSS** for styling
+- **shadcn/ui** component library (50+ components)
+- **React Router** for navigation
+- **React Query** for state management
+- **Authentication Context** for JWT management
+
+### **Backend Stack**
+- **FastAPI** with async support
+- **SQLAlchemy** with async SQLite
+- **JWT Authentication** with bcrypt
+- **Pydantic** for data validation
+- **CORS** middleware for frontend integration
+
+### **Database Schema**
+```sql
+-- Users Table
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    hashed_password VARCHAR(60) NOT NULL,
+    created_at DATETIME NOT NULL
+);
+
+-- Chats Table (Ready for Sprint 5)
+CREATE TABLE chats (
+    id INTEGER PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    prompt TEXT NOT NULL,
+    response TEXT NOT NULL,
+    created_at DATETIME NOT NULL,
+    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+```
+
+## 🔐 **Authentication System**
+
+### **Available Endpoints**
+- `POST /api/v1/auth/register` - User registration
+- `POST /api/v1/auth/login` - User login
+- `GET /api/v1/auth/me` - Get current user profile
+- `POST /api/v1/auth/refresh` - Refresh JWT token
+- `POST /api/v1/auth/logout` - Logout (client-side)
+
+### **Security Features**
+- ✅ JWT tokens with configurable expiration
+- ✅ Bcrypt password hashing (60-character hashes)
+- ✅ SQL injection protection via SQLAlchemy ORM
+- ✅ Input validation and sanitization
+- ✅ Protected routes with automatic token validation
+- ✅ Secure session management with token refresh
+
+### **Frontend Integration**
+- ✅ Authentication context for React state management
+- ✅ Protected routes with automatic redirects
+- ✅ Token storage and automatic refresh
+- ✅ Error handling and loading states
+- ✅ Real-time user data display
+
+## 📁 **Project Structure**
+
+```
+muhsinai/
+├── 🎨 Frontend (React + TypeScript)
+│   ├── src/
+│   │   ├── components/ui/     # shadcn/ui components
+│   │   ├── pages/            # Route pages
+│   │   ├── contexts/         # React contexts
+│   │   ├── lib/api.ts        # API service layer
+│   │   └── App.tsx           # Main app with routing
+│   └── package.json
+│
+├── 🔧 Backend (FastAPI + SQLAlchemy)
+│   ├── app/
+│   │   ├── api/auth.py       # ✅ Auth endpoints
+│   │   ├── services/         # Business logic
+│   │   ├── models/           # Pydantic schemas
+│   │   ├── db/               # Database layer
+│   │   ├── utils/            # JWT & config utilities
+│   │   └── main.py           # FastAPI app
+│   └── requirements.txt
+│
+├── 📋 Documentation
+│   ├── README.md             # This file
+│   ├── project_overview.txt  # Detailed project info
+│   ├── productionStatus.txt  # Sprint progress
+│   └── instructions.txt      # Original requirements
+│
+└── 🔧 Configuration
+    ├── .env                  # Environment variables
+    ├── .gitignore           # Git ignore rules
+    └── muhsinai.db          # SQLite database
+```
+
+## 🎯 **Development Progress**
+
+### ✅ **Completed Sprints**
+
+#### **Sprint 1: Foundation Setup** (2 hours)
+- ✅ FastAPI application with CORS middleware
+- ✅ Project structure with proper packages
+- ✅ Configuration management system
+- ✅ Health check and status endpoints
+- ✅ Auto-generated API documentation
+
+#### **Sprint 2: Database Foundation** (3 hours)
+- ✅ SQLAlchemy async setup with SQLite
+- ✅ User and Chat models with relationships
+- ✅ Database CRUD operations
+- ✅ Proper indexes and constraints
+- ✅ Connection utilities and testing
+
+#### **Sprint 3: Authentication System** (4 hours)
+- ✅ JWT token generation and validation
+- ✅ Bcrypt password hashing
+- ✅ Complete auth endpoints (register, login, profile, refresh, logout)
+- ✅ Frontend API service layer
+- ✅ React authentication context
+- ✅ Protected routes with automatic redirects
+- ✅ Real authentication forms with validation
+- ✅ User profile with real data display
+
+### 🚧 **Upcoming Sprints**
+
+#### **Sprint 4: OpenAI Integration** (3-4 hours)
+- ❌ OpenAI service setup and configuration
+- ❌ Prompt templates for scheduling
+- ❌ AI response formatting and validation
+- ❌ Schedule generation logic
+
+#### **Sprint 5: Chat Endpoints** (3-4 hours)
+- ❌ Chat API routes (POST /chat, GET /chat/history)
+- ❌ Frontend chat integration
+- ❌ Real-time AI responses
+- ❌ Chat history with user filtering
+
+#### **Sprint 6: User Management** (2-3 hours)
+- ❌ Extended user profile management
+- ❌ User preferences and settings
+- ❌ Enhanced user endpoints
+
+#### **Sprint 7: Integration & Polish** (2-3 hours)
+- ❌ Final API integration
+- ❌ Security enhancements
+- ❌ Performance optimization
+- ❌ Production deployment
+
+## 🧪 **Testing the Authentication System**
+
+### **Backend API Testing**
 ```bash
-# Create virtual environment
-python -m venv myenv
-source myenv/bin/activate  # On Windows: myenv\Scripts\activate
+# Register a new user
+curl -X POST "http://localhost:8000/api/v1/auth/register" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "test@example.com", "password": "password123"}'
 
-# Install dependencies
-pip install -r requirements.txt
+# Login
+curl -X POST "http://localhost:8000/api/v1/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "test@example.com", "password": "password123"}'
 
-# Set up environment variables (optional for basic testing)
-echo "DEBUG=true" > .env
-
-# Run the server
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+# Get profile (replace TOKEN with actual JWT)
+curl -X GET "http://localhost:8000/api/v1/auth/me" \
+  -H "Authorization: Bearer TOKEN"
 ```
 
-The backend will be available at `http://localhost:8000`
+### **Frontend Testing**
+1. Navigate to http://localhost:8080
+2. Click "Sign Up" and create an account
+3. Login with your credentials
+4. View your profile page with real user data
+5. Test logout functionality
 
-**✅ Working Endpoints:**
-- `GET /` - Welcome message
-- `GET /health` - Health check
-- `GET /api/v1/status` - API status
-- `GET /docs` - Interactive API documentation
+## 🔧 **Customization Guide**
 
-## 📁 Project Structure
-
-```
-MuhsinAI/
-├── src/                          # Frontend source code
-│   ├── components/               # React components
-│   │   ├── ui/                  # shadcn/ui components
-│   │   ├── Layout.tsx           # Main layout
-│   │   ├── Sidebar.tsx          # Navigation
-│   │   ├── ChatInput.tsx        # Chat interface
-│   │   └── CalendarView.tsx     # Calendar component
-│   ├── pages/                   # Route pages
-│   │   ├── Index.tsx            # Main chat + calendar
-│   │   ├── Auth.tsx             # Authentication
-│   │   ├── Dashboard.tsx        # Analytics dashboard
-│   │   ├── Profile.tsx          # User profile
-│   │   └── PastChats.tsx        # Chat history
-│   ├── hooks/                   # Custom React hooks
-│   ├── lib/                     # Utility functions
-│   └── index.css                # Global styles
-├── app/                         # Backend source code (✅ Sprint 1)
-│   ├── main.py                  # FastAPI application ✅
-│   ├── api/                     # API routes (ready)
-│   ├── models/                  # Data models (ready)
-│   ├── services/                # Business logic (ready)
-│   ├── db/                      # Database operations (ready)
-│   └── utils/                   # Helper functions
-│       └── config.py            # Configuration management ✅
-├── public/                      # Static assets
-└── docs/                        # Documentation
-```
-
-## 🎨 Design System
-
-### Color Palette
-- **Primary**: Deep Emerald Green (`#006400`)
-- **Background**: Matte Black (`hsl(220, 10%, 10%)`)
-- **Accent**: Bright Emerald (`hsl(145, 70%, 40%)`)
-- **Text**: White/Off-white for contrast
-
-### Components
-- **50+ shadcn/ui components** - Buttons, forms, dialogs, etc.
-- **Custom animations** - Fade-in, slide-in, pulse effects
-- **Responsive layout** - Mobile-first design approach
-- **Accessibility** - WCAG compliant components
-
-## 🔧 Customization Guide
-
-### Using This Project as a Template
-
-This project is designed to be easily customizable for your own AI applications:
-
-#### 1. **Branding & Theme**
+### **Theme Customization**
+The app uses a custom dark theme with CSS variables in `src/index.css`:
 ```css
-/* Update CSS variables in src/index.css */
 :root {
-  --primary: 145 100% 20%;        /* Your brand color */
-  --background: 220 10% 10%;      /* Background color */
-  --foreground: 0 0% 100%;        /* Text color */
+  --background: 0 0% 0%;           /* Matte black */
+  --primary: 160 84% 39%;          /* Emerald green */
+  --secondary: 240 4% 16%;         /* Dark gray */
 }
 ```
 
-#### 2. **Logo & Assets**
-- Replace logo in `src/components/Sidebar.tsx`
-- Update favicon and meta tags in `index.html`
-- Add your assets to `public/` directory
-
-#### 3. **AI Integration**
+### **API Configuration**
+Update `src/lib/api.ts` to change API endpoints:
 ```typescript
-// Customize AI prompts in your backend service
-const systemPrompt = `You are a helpful assistant that...`;
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 ```
 
-#### 4. **Features & Pages**
-- Add new pages in `src/pages/`
-- Create custom components in `src/components/`
-- Update routing in `src/App.tsx`
+### **Database Configuration**
+Modify `app/utils/config.py` for database settings:
+```python
+class Settings(BaseSettings):
+    database_url: str = "sqlite:///./muhsinai.db"
+    secret_key: str = "your-secret-key"
+    access_token_expire_minutes: int = 30
+```
 
-#### 5. **Backend Customization**
-- Modify API endpoints in `app/api/`
-- Update database models in `app/models/`
-- Customize business logic in `app/services/`
+## 🚀 **Deployment**
 
-## 📊 Current Status
+### **Backend Deployment Options**
+- **Render**: Free tier with automatic deployments
+- **Fly.io**: Global edge deployment
+- **Railway**: Simple Git-based deployment
+- **Heroku**: Traditional PaaS option
 
-| Component | Status | Progress |
-|-----------|--------|----------|
-| Frontend UI | ✅ Complete | 100% |
-| Design System | ✅ Complete | 100% |
-| Routing & Navigation | ✅ Complete | 100% |
-| Backend Foundation | ✅ Complete | 100% |
-| Backend API | 🚧 In Progress | 14% |
-| AI Integration | ⏳ Pending | 0% |
-| Database | ⏳ Pending | 0% |
-| Authentication | ⏳ Pending | 0% |
-| Deployment | ⏳ Pending | 0% |
+### **Frontend Deployment Options**
+- **Vercel**: Optimized for React applications
+- **Netlify**: JAMstack deployment with forms
+- **GitHub Pages**: Free static hosting
+- **Cloudflare Pages**: Global CDN deployment
 
-**Overall Progress: 30% Complete**
-
-### 🎯 Sprint Progress:
-- ✅ **Sprint 1**: Foundation Setup (Complete)
-- 🎯 **Next**: Sprint 2 - Database Foundation
-
-## 🚀 Deployment
-
-### Frontend Deployment
-- **Recommended**: Vercel, Netlify, or GitHub Pages
-- Build command: `npm run build`
-- Output directory: `dist/`
-
-### Backend Deployment (Coming Soon)
-- **Recommended**: Render, Fly.io, or Railway
-- Database: SQLite (development) → PostgreSQL (production)
-- Environment variables required
-
-## 🤝 Contributing
+## 🤝 **Contributing**
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -213,26 +305,33 @@ const systemPrompt = `You are a helpful assistant that...`;
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📝 License
+## 📄 **License**
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## 🙏 **Acknowledgments**
 
-- [shadcn/ui](https://ui.shadcn.com/) for the amazing component library
-- [Tailwind CSS](https://tailwindcss.com/) for the utility-first CSS framework
-- [Lucide](https://lucide.dev/) for the beautiful icons
-- [OpenAI](https://openai.com/) for the AI capabilities
-
-## 📞 Support
-
-If you have any questions or need help customizing this project:
-
-- 📧 Email: [adan.mohamed.w@gmail.com]
-
+- **FastAPI** for the excellent Python web framework
+- **React** and **TypeScript** for the frontend foundation
+- **shadcn/ui** for the beautiful component library
+- **Tailwind CSS** for the utility-first styling approach
+- **SQLAlchemy** for the powerful ORM capabilities
 
 ---
 
-<div align="center">
-  <strong>Built with ❤️ for the AI community</strong>
-</div>
+## 📊 **Current Status Summary**
+
+| Component | Progress | Status |
+|-----------|----------|--------|
+| **Frontend** | 85% | ✅ Complete with auth integration |
+| **Backend** | 50% | 🚧 Sprints 1-3 complete |
+| **Authentication** | 100% | ✅ Fully functional |
+| **Database** | 100% | ✅ Schema implemented |
+| **Integration** | 80% | ✅ Auth system working |
+| **Overall** | 65% | 🚧 Ready for Sprint 4 |
+
+**Next Milestone**: Sprint 4 - OpenAI Integration for AI-powered scheduling
+
+---
+
+*Built with ❤️ by the MuhsinAI team*
