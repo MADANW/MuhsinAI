@@ -1,4 +1,7 @@
-# 🤖 MuhsinAI - AI-Powered Schedule Builder
+<div align="center">
+  <img src="/public/favicon.png" alt="MuhsinAI Logo" width="120" height="120">
+
+# MuhsinAI - AI-Powered Schedule Builder
 
 > **Full-stack AI scheduling assistant with React frontend and FastAPI backend**
 
@@ -135,9 +138,7 @@ muhsinai/
 │   └── requirements.txt
 │
 └── 📁 Documentation
-    ├── README.md
-    ├── project_overview.txt
-    └── productionStatus.txt
+    └── README.md
 ```
 
 ---
