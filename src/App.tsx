@@ -1,3 +1,4 @@
+import React from 'react';
 import { Toaster } from "@/components/ui/toaster"; // Keep if using shadcn Toasts
 import { Toaster as Sonner } from "@/components/ui/sonner"; // Keep if using Sonner
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,41 +17,39 @@ import { AuthProvider, useAuth } from "./contexts/AuthContext";
 const queryClient = new QueryClient();
 
 // Protected route wrapper
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, isLoading } = useAuth();
-
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, isLoading } = useAuth();
+  
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-emerald-400 text-lg">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <div className="text-white text-lg">Loading...</div>
+        </div>
       </div>
     );
   }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/auth" replace />;
-  }
-
-  return <>{children}</>;
+  
+  return user ? <>{children}</> : <Navigate to="/auth" replace />;
 };
 
 // Public route wrapper (redirects to home if authenticated)
-const PublicRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, isLoading } = useAuth();
-
+const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, isLoading } = useAuth();
+  
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-emerald-400 text-lg">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <div className="text-white text-lg">Loading...</div>
+        </div>
       </div>
     );
   }
-
-  if (isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
-
-  return <>{children}</>;
+  
+  return user ? <Navigate to="/" replace /> : <>{children}</>;
 };
 
 const AppRoutes = () => (

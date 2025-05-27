@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Bot, AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const Auth: React.FC = () => {
@@ -94,12 +94,16 @@ const Auth: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-black p-4 animate-slide-in-fade">
       <div className="mb-8 flex items-center">
-        <Bot size={48} className="text-emerald-400" />
+        <img 
+          src="/pic/a0e13c38-4468-406e-ba01-69f71a928192.png" 
+          alt="MuhsinAI Logo" 
+          className="h-12 w-12 object-contain"
+        />
         <span className="ml-3 text-4xl font-semibold text-white">MuhsinAI</span>
       </div>
       
       <div className="w-full max-w-md bg-gray-900 p-8 rounded-xl shadow-2xl border border-gray-800">
-        <h2 className="text-3xl font-bold text-center text-emerald-400 mb-8">
+        <h2 className="text-3xl font-bold text-center text-white mb-8">
           {isSignUp ? 'Create Account' : 'Sign In'}
         </h2>
         
@@ -122,7 +126,7 @@ const Auth: React.FC = () => {
               placeholder="you@example.com" 
               value={formData.email}
               onChange={handleInputChange}
-              className="mt-1 bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:border-emerald-400 focus:ring-emerald-400"
+              className="mt-1 bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:border-white focus:ring-white"
               disabled={isSubmitting}
               required
             />
@@ -137,7 +141,7 @@ const Auth: React.FC = () => {
               placeholder="••••••••" 
               value={formData.password}
               onChange={handleInputChange}
-              className="mt-1 bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:border-emerald-400 focus:ring-emerald-400"
+              className="mt-1 bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:border-white focus:ring-white"
               disabled={isSubmitting}
               required
               minLength={8}
@@ -154,7 +158,7 @@ const Auth: React.FC = () => {
                 placeholder="••••••••" 
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
-                className="mt-1 bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:border-emerald-400 focus:ring-emerald-400"
+                className="mt-1 bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:border-white focus:ring-white"
                 disabled={isSubmitting}
                 required={isSignUp}
               />
@@ -163,7 +167,7 @@ const Auth: React.FC = () => {
           
           <Button 
             type="submit" 
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-lg py-3 shadow-lg transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            className="w-full bg-white hover:bg-gray-200 text-black text-lg py-3 shadow-lg transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             disabled={isSubmitting}
           >
             {isSubmitting ? (
@@ -181,7 +185,7 @@ const Auth: React.FC = () => {
           {isSignUp ? 'Already have an account?' : "Don't have an account?"}
           <button
             onClick={toggleMode}
-            className="font-medium text-emerald-400 hover:text-emerald-300 hover:underline ml-1 transition-colors"
+            className="font-medium text-white hover:text-gray-300 hover:underline ml-1 transition-colors"
             disabled={isSubmitting}
           >
             {isSignUp ? 'Sign In' : 'Sign Up'}

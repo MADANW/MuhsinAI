@@ -1,34 +1,41 @@
-
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { User, Bot } from 'lucide-react';
+import { User } from 'lucide-react';
 
 interface ChatMessageProps {
-  sender: 'user' | 'ai';
-  text: string;
-  timestamp: string;
+  message: string;
+  isUser: boolean;
+  timestamp?: string;
 }
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ sender, text, timestamp }) => {
-  const isUser = sender === 'user';
-
+const ChatMessage: React.FC<ChatMessageProps> = ({ message, isUser, timestamp }) => {
   return (
     <div className={cn(
-      "flex mb-4 animate-fade-in-pop",
-      isUser ? "justify-end" : "justify-start"
+      "flex gap-3 p-4 rounded-lg mb-4 animate-fade-in",
+      isUser 
+        ? "bg-white/10 border border-white/20 ml-8" 
+        : "bg-gray-800/50 border border-gray-700/50 mr-8"
     )}>
-      <div className={cn(
-        "max-w-[70%] p-3 rounded-xl shadow-soft flex items-start space-x-2",
-        isUser ? "bg-primary text-primary-foreground rounded-br-none" : "bg-card text-card-foreground rounded-bl-none"
-      )}>
-        {isUser ? <User size={20} className="opacity-80 mt-1" /> : <Bot size={20} className="text-primary mt-1" />}
-        <div>
-          <p className="text-sm">{text}</p>
-          <p className={cn(
-            "text-xs mt-1",
-            isUser ? "text-primary-foreground/70 text-right" : "text-muted-foreground text-left"
-          )}>{timestamp}</p>
-        </div>
+      <div className="flex-shrink-0">
+        {isUser ? (
+          <User size={20} className="opacity-80 mt-1" />
+        ) : (
+          <img 
+            src="/pic/a0e13c38-4468-406e-ba01-69f71a928192.png" 
+            alt="MuhsinAI" 
+            className="w-5 h-5 object-contain mt-1"
+          />
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm text-gray-300 whitespace-pre-wrap break-words">
+          {message}
+        </p>
+        {timestamp && (
+          <p className="text-xs text-gray-500 mt-1">
+            {timestamp}
+          </p>
+        )}
       </div>
     </div>
   );
