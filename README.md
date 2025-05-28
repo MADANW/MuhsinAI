@@ -88,8 +88,6 @@ npm run dev
 ### **4. Access Application**
 - **Frontend**: http://localhost:8082
 - **Backend API**: http://localhost:8000
-- **API Documentation**: http://localhost:8000/docs
-
 ---
 
 ## 📱 **Features & Screenshots**
@@ -191,20 +189,7 @@ curl -X POST "http://localhost:8000/api/v1/auth/register" \
 - Responsive design across devices
 - Logo and branding consistency
 
----
-
-## 🚀 **Deployment**
-
-### **Backend Deployment Options**
-- **Render**: Free tier with automatic deployments
-- **Fly.io**: Global edge deployment
-- **Railway**: Simple deployment with database
-
-### **Frontend Deployment Options**
-- **Vercel**: Optimized for React applications
-- **Netlify**: Static site hosting with CI/CD
-- **GitHub Pages**: Free hosting for static sites
-
+  
 ---
 
 ## 🤝 **Contributing**
@@ -234,7 +219,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 **Support**
 
-For support, email support@muhsinai.com or join our Discord community.
+For support, email adan.moahmed.w@gmail.com or join our Discord community.
 
 ---
 
