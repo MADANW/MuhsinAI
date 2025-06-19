@@ -8,7 +8,7 @@ from app.utils.config import settings
 from app.db.database import get_db, create_tables, check_database_connection
 from app.db.crud import UserCRUD, ChatCRUD
 from app.db import models
-from app.api import auth
+from app.api import auth, chat
 
 
 def create_app() -> FastAPI:
@@ -33,6 +33,7 @@ def create_app() -> FastAPI:
     
     # Include routers
     app.include_router(auth.router, prefix="/api/v1")
+    app.include_router(chat.router, prefix="/api/v1")
     
     return app
 

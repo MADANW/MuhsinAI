@@ -36,38 +36,40 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Initialize auth state on mount
   useEffect(() => {
-    initializeAuth();
+    const initAuth = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Check if user is authenticated
+        if (authApi.isAuthenticated()) {
+          // Get user from storage first (for immediate UI update)
+          const storedUser = authApi.getCurrentUser();
+          if (storedUser) {
+            setUser(storedUser);
+          }
+          
+          // Verify token is still valid by fetching fresh profile
+          try {
+            const profile = await authApi.getProfile();
+            setUser(profile);
+          } catch (error) {
+            // Token is invalid, clear auth state
+            console.warn('Token validation failed:', error);
+            await logout();
+          }
+        }
+      } catch (error) {
+        console.error('Auth initialization failed:', error);
+        await logout();
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initAuth();
   }, []);
 
-  const initializeAuth = async () => {
-    try {
-      setIsLoading(true);
-      
-      // Check if user is authenticated
-      if (authApi.isAuthenticated()) {
-        // Get user from storage first (for immediate UI update)
-        const storedUser = authApi.getCurrentUser();
-        if (storedUser) {
-          setUser(storedUser);
-        }
-        
-        // Verify token is still valid by fetching fresh profile
-        try {
-          const profile = await authApi.getProfile();
-          setUser(profile);
-        } catch (error) {
-          // Token is invalid, clear auth state
-          console.warn('Token validation failed:', error);
-          await logout();
-        }
-      }
-    } catch (error) {
-      console.error('Auth initialization failed:', error);
-      await logout();
-    } finally {
-      setIsLoading(false);
-    }
-  };
+
 
   const login = async (credentials: LoginRequest): Promise<void> => {
     try {

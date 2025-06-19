@@ -74,8 +74,9 @@ const Auth: React.FC = () => {
         });
       }
       // Navigation will be handled by the AuthProvider/ProtectedRoute
-    } catch (err: any) {
-      setError(err.message || 'Authentication failed. Please try again.');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Authentication failed. Please try again.';
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

@@ -89,7 +89,6 @@ npm run dev
 - **Frontend**: http://localhost:8082
 - **Backend API**: http://localhost:8000
 - **API Documentation**: http://localhost:8000/docs
-
 ---
 
 ## 📱 **Features & Screenshots**

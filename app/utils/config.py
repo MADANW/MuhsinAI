@@ -1,5 +1,7 @@
 from pydantic_settings import BaseSettings
+from pydantic import Field, validator
 from typing import Optional
+import os
 
 
 class Settings(BaseSettings):
@@ -14,9 +16,31 @@ class Settings(BaseSettings):
     database_url: str = "sqlite+aiosqlite:///./muhsinai.db"
     
     # Security Configuration
-    secret_key: str = "your-secret-key-change-in-production"
+    secret_key: str = Field(
+        default="############################################",  # Development fallback
+        min_length=32,
+        description="JWT signing secret key. MUST be set via SECRET_KEY environment variable for production."
+    )
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
+    
+    @validator('secret_key')
+    def validate_secret_key(cls, v):
+        if not v or len(v) < 32:
+            raise ValueError(
+                "SECRET_KEY must be at least 32 characters long. "
+                "Generate one with: openssl rand -hex 32"
+            )
+        
+        # Warn if using the development fallback in production
+        if v == "#*ne73u98h1201(0uh82*@&*)" and not cls.debug:
+            raise ValueError(
+                "You're using the development SECRET_KEY in production! "
+                "Set a secure SECRET_KEY environment variable. "
+                "Generate one with: openssl rand -hex 32"
+            )
+        
+        return v
     
     # OpenAI Configuration
     openai_api_key: Optional[str] = None
