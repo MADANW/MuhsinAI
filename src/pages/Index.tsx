@@ -270,9 +270,9 @@ const Index: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-screen bg-background">
+    <div className="flex-1 flex flex-col bg-background">
       {/* Header */}
-      <div className="border-b border-border bg-background px-6 py-4">
+      <div className="border-b border-border bg-background px-6 py-4 flex-shrink-0">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-foreground">AI Schedule Assistant</h1>
@@ -292,9 +292,9 @@ const Index: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex-1 flex">
+      <div className="flex-1 flex min-h-0">
         {/* Chat Section */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col min-h-0">
           {/* Chat Messages */}
           <div className="flex-1 overflow-y-auto p-6 space-y-4">
             {chatState.messages.length === 0 ? (
@@ -391,7 +391,7 @@ const Index: React.FC = () => {
           </div>
 
           {/* Chat Input */}
-          <div className="border-t border-border bg-background p-4">
+          <div className="border-t border-border bg-background p-4 flex-shrink-0">
             <ChatInput
               onSendMessage={handleSendMessage}
               disabled={chatState.isLoading || connectionStatus !== 'connected'}
@@ -405,8 +405,8 @@ const Index: React.FC = () => {
         </div>
 
         {/* Calendar Sidebar */}
-        <div className="w-96 border-l border-border bg-background">
-          <div className="p-4 border-b border-border">
+        <div className="w-96 border-l border-border bg-background flex flex-col">
+          <div className="p-4 border-b border-border flex-shrink-0">
             <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
               <Calendar className="h-5 w-5 text-primary" />
               Your Schedule
@@ -418,7 +418,7 @@ const Index: React.FC = () => {
             )}
           </div>
           
-          <div className="h-full overflow-y-auto">
+          <div className="flex-1 overflow-y-auto">
             <CalendarView 
               events={currentSchedule}
               onEventClick={(event) => {

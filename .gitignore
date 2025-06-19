@@ -121,10 +121,8 @@ dmypy.json
 # pytype static type analyzer
 .pytype/
 
-# Project specific files
-instructions.txt
-productionStatus.txt
-project_overview.txt
+# Project specific files (uncomment to ignore)
+# instructions.txt
 
 # Temporary files
 *.tmp

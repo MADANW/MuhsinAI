@@ -1,0 +1,104 @@
+
+📦 Final requirements.txt for FastAPI Backend
+
+# --- CORE FRAMEWORK ---
+fastapi             # High-performance API framework
+uvicorn[standard]   # ASGI server to run FastAPI
+
+# --- DATABASE (SQLite) ---
+sqlalchemy[asyncio] # SQL ORM + async support
+aiosqlite           # Async SQLite driver
+
+# --- SECURITY ---
+passlib[bcrypt]     # Password hashing
+python-jose         # JWT token encoding/decoding
+python-dotenv       # Load environment variables from .env
+
+# --- OPENAI INTEGRATION ---
+openai              # ChatGPT API wrapper
+
+# --- DEV EXPERIENCE (optional) ---
+httpx               # Async HTTP requests (can test APIs)
+
+------------------------------------------------------------
+
+🧠 CEO Brief: What Each Package Does
+
+fastapi        - Defines API routes like /chat, /auth
+uvicorn        - Dev server with hot reload
+sqlalchemy     - ORM for database models
+aiosqlite      - Async support for SQLite
+passlib        - Password hashing with bcrypt
+python-jose    - JWT creation and verification
+python-dotenv  - Load .env for API keys and secrets
+openai         - Integrate with ChatGPT API
+httpx          - Used for making async HTTP requests
+
+------------------------------------------------------------
+
+✅ Install Dependencies
+
+pip install -r requirements.txt
+
+------------------------------------------------------------
+
+🛠 Folder Structure
+
+app/
+├── api/            ← Route handlers
+├── models/         ← Pydantic schemas
+├── services/       ← ChatGPT + scheduling logic
+├── db/             ← SQLite + user data
+├── utils/          ← JWT, password hashing
+└── main.py         ← App entry point
+
+------------------------------------------------------------
+
+🚀 Functionality to Implement
+
+1. /auth/register (POST)
+   - Accepts email + password
+   - Stores user in SQLite (hashed)
+   - Returns JWT
+
+2. /auth/login (POST)
+   - Verifies credentials
+   - Returns JWT
+
+3. /chat (POST)
+   - Protected route
+   - Accepts a prompt from user
+   - Sends prompt to OpenAI API (gpt-3.5-turbo)
+   - Returns generated schedule
+
+4. /chat/history (GET)
+   - Protected route
+   - Fetches past prompts and responses for logged-in user
+
+------------------------------------------------------------
+
+💾 SQLite Schema
+
+Table: users
+- id (PK)
+- email
+- hashed_password
+- created_at
+
+Table: chats
+- id (PK)
+- user_id (FK)
+- prompt
+- response
+- created_at
+
+------------------------------------------------------------
+
+🎯 Instructions for Developer (Cursor)
+
+"Please create a FastAPI backend using the attached requirements.txt.
+Set up SQLite with SQLAlchemy and build these core routes:
+/auth/register, /auth/login, /chat, and /chat/history.
+Use JWT tokens for protected routes and store chats linked to each user.
+OpenAI integration should start with gpt-3.5-turbo, using an .env file for keys.
+Organize the code by feature folder (API, services, models, db)."
