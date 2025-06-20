@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from fastapi.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 import uvicorn
 import logging
@@ -183,7 +183,7 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint for monitoring and testing."""
+    """Basic health check endpoint for monitoring."""
     db_status = await check_database_connection()
     
     return {
@@ -195,8 +195,22 @@ async def health_check():
         "authentication_enabled": True,
         "user_management_enabled": True,
         "chat_system_enabled": True,
-        "sprint_6_status": "complete"
+        "sprint_7_status": "complete"
     }
+
+
+@app.get("/health/detailed")
+async def detailed_health_check():
+    """Sprint 7: Comprehensive health check with all system components."""
+    return await get_health_status()
+
+
+@app.get("/health/tests")
+async def run_smoke_tests_endpoint():
+    """Sprint 7: Run basic smoke tests."""
+    if not settings.debug:
+        return {"error": "Tests are only available in development mode"}
+    return await run_basic_tests()
 
 
 @app.get("/api/v1/status")

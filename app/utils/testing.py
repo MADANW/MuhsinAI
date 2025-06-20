@@ -38,8 +38,8 @@ class HealthChecker:
             # Test basic query
             async for db in get_db():
                 try:
-                    # Try to count users (should work even with empty table)
-                    result = await UserCRUD.count_user_chats(db, 999999)  # Non-existent user
+                    # Try to get a user (should work even with non-existent user)
+                    result = await UserCRUD.get_user_by_id(db, 999999)  # Non-existent user
                     break
                 except Exception as e:
                     return {
@@ -77,7 +77,7 @@ class HealthChecker:
             test_prompt = "Hello"
             try:
                 openai_service = OpenAIService()
-                response = await openai_service.chat_completion(test_prompt, [])
+                response = await openai_service.generate_response(test_prompt, [])
                 
                 return {
                     "status": "healthy",
