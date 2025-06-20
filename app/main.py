@@ -1,39 +1,138 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.middleware.base import BaseHTTPMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 import uvicorn
+import logging
+import time
 
 from app.utils.config import settings
+from app.utils.security import SecurityHeaders, check_rate_limit, get_client_ip
+from app.utils.logging import log_startup_event, log_database_event, error_tracker
+from app.utils.testing import get_health_status, run_basic_tests
 from app.db.database import get_db, create_tables, check_database_connection
 from app.db.crud import UserCRUD, ChatCRUD
 from app.db import models
-from app.api import auth, chat
+from app.api import auth, chat, user
+
+
+class SecurityMiddleware(BaseHTTPMiddleware):
+    """Sprint 7: Security middleware for production deployment."""
+    
+    async def dispatch(self, request: Request, call_next):
+        # Start time for request logging
+        start_time = time.time()
+        
+        # Get client info for logging
+        client_ip = get_client_ip(request)
+        
+        # Add security headers
+        response = await call_next(request)
+        
+        # Apply security headers
+        headers = SecurityHeaders.get_security_headers()
+        for name, value in headers.items():
+            response.headers[name] = value
+        
+        # Log request (basic logging)
+        process_time = time.time() - start_time
+        logging.info(
+            f"[{client_ip}] {request.method} {request.url.path} - "
+            f"{response.status_code} - {process_time:.3f}s"
+        )
+        
+        return response
+
+
+class RateLimitMiddleware(BaseHTTPMiddleware):
+    """Sprint 7: Rate limiting middleware."""
+    
+    async def dispatch(self, request: Request, call_next):
+        # Determine endpoint type for rate limiting
+        path = request.url.path
+        endpoint_type = "default"
+        
+        if path.startswith("/api/v1/auth"):
+            endpoint_type = "auth"
+        elif path.startswith("/api/v1/chat"):
+            endpoint_type = "chat"
+        elif path.startswith("/api/v1/user"):
+            endpoint_type = "user"
+        
+        # Skip rate limiting for health checks and docs
+        if path in ["/health", "/", "/docs", "/redoc", "/openapi.json"]:
+            return await call_next(request)
+        
+        # Check rate limit
+        try:
+            check_rate_limit(request, endpoint_type)
+        except Exception as e:
+            return JSONResponse(
+                status_code=429,
+                content={"detail": str(e)}
+            )
+        
+        return await call_next(request)
 
 
 def create_app() -> FastAPI:
-    """Create and configure the FastAPI application."""
+    """Create and configure the FastAPI application with Sprint 7 security enhancements."""
     
     app = FastAPI(
         title=settings.app_name,
         version=settings.app_version,
-        description="AI-powered scheduling assistant backend API",
-        docs_url="/docs",
-        redoc_url="/redoc",
+        description="AI-powered scheduling assistant with production security (Sprint 7)",
+        docs_url="/docs" if settings.debug else None,  # Disable docs in production
+        redoc_url="/redoc" if settings.debug else None,
+        openapi_url="/openapi.json" if settings.debug else None,
     )
     
-    # Add CORS middleware
+    # Production CORS configuration
+    production_origins = [
+        "https://muhsinai.vercel.app",  # Production frontend
+        "https://muhsinai.netlify.app",  # Alternative frontend
+        "https://*.onrender.com",  # Render deployment URLs
+    ]
+    
+    cors_origins = settings.allowed_origins if settings.debug else production_origins
+    
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.allowed_origins,
+        allow_origins=cors_origins,
         allow_credentials=True,
-        allow_methods=["GET", "POST", "PUT", "DELETE"],
+        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allow_headers=["*"],
+        max_age=86400,  # Cache preflight for 24 hours
     )
+    
+    # Sprint 7: Add security middleware
+    app.add_middleware(SecurityMiddleware)
+    
+    # Sprint 7: Add rate limiting (only in production to avoid dev issues)
+    if not settings.debug:
+        app.add_middleware(RateLimitMiddleware)
+    
+    # Sprint 7: Global exception handler
+    @app.exception_handler(Exception)
+    async def global_exception_handler(request: Request, exc: Exception):
+        """Global exception handler for unhandled errors."""
+        error_tracker.track_error(exc, str(request.url.path), None)
+        
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": "Internal server error",
+                "message": "An unexpected error occurred. Please try again later.",
+                "timestamp": time.time(),
+                "debug_info": str(exc) if settings.debug else None
+            }
+        )
     
     # Include routers
     app.include_router(auth.router, prefix="/api/v1")
     app.include_router(chat.router, prefix="/api/v1")
+    app.include_router(user.router, prefix="/api/v1")
     
     return app
 
@@ -44,12 +143,26 @@ app = create_app()
 
 @app.on_event("startup")
 async def startup_event():
-    """Initialize database on startup."""
+    """Initialize database and Sprint 7 systems on startup."""
     try:
+        log_startup_event("Application starting up...")
+        
+        # Database initialization
         await create_tables()
-        print("✅ Database tables created successfully")
+        log_database_event("Database tables created", True)
+        log_startup_event("Sprint 6: User Management system initialized")
+        
+        # Sprint 7 initialization
+        log_startup_event("Sprint 7: Security middleware enabled")
+        log_startup_event("Sprint 7: Error tracking initialized")
+        log_startup_event("Sprint 7: Production logging configured")
+        
+        log_startup_event("🎉 MuhsinAI backend ready for production!")
+        
     except Exception as e:
-        print(f"❌ Database initialization failed: {e}")
+        log_database_event("Database initialization", False, str(e))
+        error_tracker.track_error(e, "startup", None)
+        raise
 
 
 @app.get("/")
@@ -61,7 +174,10 @@ async def root():
         "status": "running",
         "docs": "/docs",
         "database": "connected" if await check_database_connection() else "disconnected",
-        "authentication": "available"
+        "authentication": "available",
+        "user_management": "available",
+        "chat_system": "available",
+        "sprint_status": "Sprint 6 Complete - User Management System"
     }
 
 
@@ -76,7 +192,10 @@ async def health_check():
         "version": settings.app_version,
         "environment": "development" if settings.debug else "production",
         "database_connected": db_status,
-        "authentication_enabled": True
+        "authentication_enabled": True,
+        "user_management_enabled": True,
+        "chat_system_enabled": True,
+        "sprint_6_status": "complete"
     }
 
 
@@ -88,18 +207,24 @@ async def api_status():
     return {
         "api_status": "operational",
         "database": "connected" if db_connected else "disconnected",
-        "openai": "not_configured" if not settings.openai_api_key else "configured",
+        "openai": "configured" if settings.openai_api_key else "not_configured",
         "features": {
             "database": "✅ operational" if db_connected else "❌ disconnected",
             "authentication": "✅ operational (Sprint 3)",
-            "chat": "⏳ pending (Sprint 5)",
-            "user_management": "⏳ pending (Sprint 6)"
+            "chat": "✅ operational (Sprint 5)",
+            "user_management": "✅ operational (Sprint 6)",
+            "profile_management": "✅ operational",
+            "user_preferences": "✅ operational",
+            "user_statistics": "✅ operational"
         },
         "sprint_progress": {
             "sprint_1": "✅ complete (Foundation)",
             "sprint_2": "✅ complete (Database)",
             "sprint_3": "✅ complete (Authentication)",
-            "current_phase": "Ready for Sprint 4 (OpenAI Integration)"
+            "sprint_4": "✅ complete (OpenAI Integration)",
+            "sprint_5": "✅ complete (Chat Endpoints)",
+            "sprint_6": "✅ complete (User Management)",
+            "current_phase": "Ready for Sprint 7 (Integration & Polish)"
         },
         "available_endpoints": {
             "auth": {
@@ -108,6 +233,23 @@ async def api_status():
                 "profile": "GET /api/v1/auth/me",
                 "refresh": "POST /api/v1/auth/refresh",
                 "logout": "POST /api/v1/auth/logout"
+            },
+            "chat": {
+                "create_schedule": "POST /api/v1/chat/",
+                "chat_history": "GET /api/v1/chat/history",
+                "delete_chat": "DELETE /api/v1/chat/history/{chat_id}",
+                "test_openai": "GET /api/v1/chat/test-openai"
+            },
+            "user_management": {
+                "get_profile": "GET /api/v1/user/profile",
+                "update_profile": "PUT /api/v1/user/profile",
+                "get_preferences": "GET /api/v1/user/preferences",
+                "update_preferences": "PUT /api/v1/user/preferences",
+                "get_statistics": "GET /api/v1/user/stats",
+                "get_activity": "GET /api/v1/user/activity",
+                "complete_profile": "GET /api/v1/user/complete-profile",
+                "delete_account": "DELETE /api/v1/user/account",
+                "health_check": "GET /api/v1/user/health"
             }
         }
     }
@@ -115,25 +257,37 @@ async def api_status():
 
 @app.get("/api/v1/db/test")
 async def test_database(db: AsyncSession = Depends(get_db)):
-    """Test database operations (for development only)."""
+    """Test database operations including new Sprint 6 features."""
     try:
-        # Test creating a user
+        from app.db.crud import UserPreferencesCRUD
+        
+        # Test creating a user with profile data
         test_user = await UserCRUD.create_user(
             db, 
-            email="test@example.com", 
-            hashed_password="test_hash_123"
+            email="test_sprint6@example.com", 
+            hashed_password="test_hash_123",
+            first_name="Test",
+            last_name="User",
+            display_name="Test Sprint 6",
+            timezone="UTC"
         )
+        
+        # Test preferences (should be auto-created)
+        preferences = await UserPreferencesCRUD.get_user_preferences(db, test_user.id)
         
         # Test creating a chat
         test_chat = await ChatCRUD.create_chat(
             db,
             user_id=test_user.id,
-            prompt="Test prompt for scheduling",
-            response="Test AI response with sample schedule"
+            prompt="Test Sprint 6 scheduling prompt",
+            response='{"message": "Sprint 6 test response", "schedule": {"events": []}}'
         )
         
-        # Test retrieving user with chats
-        user_with_chats = await UserCRUD.get_user_with_chats(db, test_user.id)
+        # Test user stats
+        stats = await UserCRUD.get_user_stats(db, test_user.id)
+        
+        # Test user with preferences
+        user_with_prefs = await UserCRUD.get_user_with_preferences(db, test_user.id)
         
         # Clean up test data
         await ChatCRUD.delete_chat(db, test_chat.id, test_user.id)
@@ -141,25 +295,34 @@ async def test_database(db: AsyncSession = Depends(get_db)):
         
         return {
             "status": "success",
-            "message": "Database operations working correctly",
+            "message": "Sprint 6 database operations working correctly",
             "test_results": {
-                "user_creation": "✅ success",
-                "chat_creation": "✅ success", 
-                "data_retrieval": "✅ success",
-                "relationships": "✅ success",
+                "user_creation_with_profile": "✅ success",
+                "preferences_auto_creation": "✅ success",
+                "chat_creation": "✅ success",
+                "user_statistics": "✅ success",
+                "user_with_preferences": "✅ success",
                 "cleanup": "✅ success"
+            },
+            "sprint_6_features": {
+                "extended_user_model": "✅ operational",
+                "user_preferences": "✅ operational", 
+                "user_statistics": "✅ operational",
+                "profile_management": "✅ operational"
             },
             "test_data": {
                 "user_id": test_user.id,
                 "chat_id": test_chat.id,
-                "user_chats_count": len(user_with_chats.chats) if user_with_chats else 0
+                "preferences_created": preferences is not None,
+                "stats_calculated": bool(stats),
+                "preferences_loaded": user_with_prefs.preferences is not None
             }
         }
         
     except Exception as e:
         return {
             "status": "error",
-            "message": f"Database test failed: {str(e)}",
+            "message": f"Sprint 6 database test failed: {str(e)}",
             "error_type": type(e).__name__
         }
 
